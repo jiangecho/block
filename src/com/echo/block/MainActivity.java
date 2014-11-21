@@ -9,7 +9,6 @@ import com.echo.block.sprite.AnimationBlockSprite;
 import com.echo.block.sprite.BlockSprite;
 import com.echo.block.sprite.ScoreSprite;
 import com.echo.block.sprite.Sprite;
-import com.example.block.R;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
@@ -377,8 +376,8 @@ public class MainActivity extends Activity implements Callback {
 			@Override
 			public void run() {
 				//resultLayer.getParent().requestTransparentRegion(surfaceView);
-				resultLayer.setBackgroundColor(Color.parseColor("#FF773460"));
-				resultLayer.bringToFront();
+				//resultLayer.setBackgroundColor(Color.parseColor("#FF773460"));
+				//resultLayer.bringToFront();
 				resultLayer.setVisibility(View.VISIBLE);
 				Log.d("jyj", "jyj onGameOver");
 

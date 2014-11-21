@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
-    <string name="app_name">Block</string>
-    <string name="hello_world">Hello world!</string>
-    <string name="action_settings">Settings</string>
-
+    <string name="app_name">极简方块</string>
+    <string name="start">开始</string>
+    <string name="restart">再挑战一次</string>
+    <string name="best_score">最高分</string>
+    <string name="back">返回菜单</string>
+    <string name="type_normal">正常</string>
+    <string name="type_info">abckjl</string>
+    <string name="mode_random">随机模式</string>
 </resources>
