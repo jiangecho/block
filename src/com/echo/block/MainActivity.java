@@ -11,8 +11,6 @@ import com.echo.block.sprite.ScoreSprite;
 import com.echo.block.sprite.Sprite;
 
 import android.app.Activity;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -24,13 +22,20 @@ import android.view.SurfaceHolder;
 import android.view.View;
 import android.view.SurfaceHolder.Callback;
 import android.view.SurfaceView;
+import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 public class MainActivity extends Activity implements Callback {
 
 	private SurfaceHolder surfaceHolder;
 	private SurfaceView surfaceView;
 	private LinearLayout resultLayer;
+	private LinearLayout bottomButtonsLayout;
+	private TextView currentScoreTextView, bestScoreTextView;
+	
+	private Button[] bottomButtons;
+	
 	private DrawingThread drawingThread;
 
 	private float surfaceWidth, surfaceHeight;
@@ -45,7 +50,7 @@ public class MainActivity extends Activity implements Callback {
 	private int columnCount = DEFAULT_COLUMN_COUNT;
 	private int rowCount;
 
-	private int MOVE_STEP_PER_BLOCK = 100;
+	private int MOVE_STEP_PER_BLOCK = 80;
 	private int moveStepCount = 0;
 	private float moveHeightPerStep;
 
@@ -74,12 +79,15 @@ public class MainActivity extends Activity implements Callback {
 
 	private int gameState = GAME_STATE_NOT_START;
 	private static final int GAME_STATE_NOT_START = 0;
-	private static final int GAME_STATE_NOT_ONGOING = 1;
-	private static final int GAME_STATE_NOT_END = 2;
+	private static final int GAME_STATE_ONGOING = 1;
+	private static final int GAME_STATE_OVER = 2;
 	
 	private int currentScore = 0;
+	private int bestScore = 0;
 	private final static int SCORE_PER_ROW = 5;
 	private ScoreSprite scoreSprite;
+	
+	private static final int GAME_TYPE = 0;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -94,7 +102,21 @@ public class MainActivity extends Activity implements Callback {
 		surfaceHolder.setFormat(PixelFormat.TRANSPARENT);
 
 		resultLayer = (LinearLayout) findViewById(R.id.resultLayer);
+		bottomButtonsLayout = (LinearLayout) findViewById(R.id.bottom_buttons_layout);
+//		LayoutInflater layoutInflater = LayoutInflater.from(getBaseContext());
+//		resultLayer = (LinearLayout) layoutInflater.inflate(R.layout.result_layer, null);
+//		LayoutParams layoutParamsControl = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+//		resultLayer.setLayoutParams(layoutParamsControl);
 
+		bottomButtons = new Button[columnCount];
+		bottomButtons[0] = (Button) findViewById(R.id.button_0);
+		bottomButtons[1] = (Button) findViewById(R.id.button_1);
+		bottomButtons[2] = (Button) findViewById(R.id.button_2);
+		bottomButtons[3] = (Button) findViewById(R.id.button_3);
+		
+		currentScoreTextView = (TextView) findViewById(R.id.score_textview);
+		bestScoreTextView = (TextView) findViewById(R.id.best_score_textview);
+		
 		sprites = new ArrayList<Sprite>();
 		globalPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 		random = new Random();
@@ -106,6 +128,9 @@ public class MainActivity extends Activity implements Callback {
 		scoreSprite.setX(50);
 		scoreSprite.setY(100);
 		sprites.add(scoreSprite);
+		
+		bestScore = (int) App.getBestScore(GAME_TYPE);
+		reset();
 	}
 
 	@Override
@@ -135,53 +160,71 @@ public class MainActivity extends Activity implements Callback {
 	}
 
 	public void onType0ButtonClick(View view) {
-		BlockSprite blockSprite = BlockSprite.obtainInstance(0, surfaceHeight, blockWidth, blockHeight);
-		blockSprite.setSpeed(blockHeight / 3);
-		synchronized (lock) {
-			sprites.add(blockSprite);
-
+		addNewBlock(0, surfaceHeight, blockWidth, blockHeight);
+		if (gameState != GAME_STATE_ONGOING) {
+			onGameStart();
 		}
 	}
 
 	public void onType1ButtonClick(View view) {
-		BlockSprite blockSprite = BlockSprite.obtainInstance(blockWidth, surfaceHeight, blockWidth, blockHeight);
-		blockSprite.setSpeed(blockHeight / 3);
-		synchronized (lock) {
-			sprites.add(blockSprite);
-
+		addNewBlock(blockWidth, surfaceHeight, blockWidth, blockHeight);
+		if (gameState != GAME_STATE_ONGOING) {
+			onGameStart();
 		}
 
 	}
 
 	public void onType2ButtonClick(View view) {
-		BlockSprite blockSprite = BlockSprite.obtainInstance(blockWidth * 2, surfaceHeight, blockWidth, blockHeight);
-		blockSprite.setSpeed(blockHeight / 3);
-		synchronized (lock) {
-			sprites.add(blockSprite);
-
+		addNewBlock(blockWidth * 2, surfaceHeight, blockWidth, blockHeight);
+		if (gameState != GAME_STATE_ONGOING) {
+			onGameStart();
 		}
 
 	}
 
 	public void onType3ButtonClick(View view) {
-		BlockSprite blockSprite = BlockSprite.obtainInstance(blockWidth * 3, surfaceHeight, blockWidth, blockHeight);
+		addNewBlock(blockWidth * 3, surfaceHeight, blockWidth, blockHeight);
+		if (gameState != GAME_STATE_ONGOING) {
+			gameState = GAME_STATE_ONGOING;
+			onGameStart();
+		}
+	}
+	
+	private void addNewBlock(float x, float y, float w, float h){
+		BlockSprite blockSprite = BlockSprite.obtainInstance(x, y, w, h);
 		blockSprite.setSpeed(blockHeight / 3);
 		synchronized (lock) {
 			sprites.add(blockSprite);
 
 		}
-
+		
 	}
 
 	public void onRestartButtonClick(View view) {
-		currentScore = 0;
-		scoreSprite.setCurrentScore(currentScore);
 		reset();
 		startDrawingThread();
-		resultLayer.setVisibility(View.INVISIBLE);
 	}
+	
+	private void reset(){
+		currentScore = 0;
+		scoreSprite.setCurrentScore(currentScore);
+		resetBlocks();
+		resultLayer.setVisibility(View.INVISIBLE);
+		bottomButtonsLayout.setVisibility(View.VISIBLE);
+		
+		int startIndex = random.nextInt(columnCount);
+		for (int i = 0; i < columnCount; i++) {
+			bottomButtons[i].setTextColor(Color.WHITE);
+			bottomButtons[i].setText("");
+			bottomButtons[i].setClickable(false);
+		}
+		bottomButtons[startIndex].setText(R.string.start);
+		bottomButtons[startIndex].setClickable(true);
+		
+	}
+	
 
-	private void reset() {
+	private void resetBlocks() {
 		for (int i = 0; i < rowCount; i++) {
 			for (int j = 0; j < columnCount; j++) {
 				matrix[i][j] = CELL_TYPE_BLANK;
@@ -237,8 +280,11 @@ public class MainActivity extends Activity implements Callback {
 
 	private void updateFirstHitBlockIndexes() {
 		for (int i = 0; i < columnCount; i++) {
+			firstHitBlockIndexes[i] = -1;
+		}
+		for (int i = 0; i < columnCount; i++) {
 			for (int j = 0; j < rowCount; j++) {
-				if (matrix[j][i] != CELL_TYPE_BLANK) {
+				if (matrix[j][i] == CELL_TYPE_BLOCK) {
 					firstHitBlockIndexes[i] = j;
 				}
 			}
@@ -370,17 +416,32 @@ public class MainActivity extends Activity implements Callback {
 		canvas.drawColor(0x00000000, PorterDuff.Mode.CLEAR);
 	}
 
+	private void onGameStart(){
+		gameState = GAME_STATE_ONGOING;
+		for (int i = 0; i < columnCount; i++) {
+			bottomButtons[i].setClickable(true);
+			bottomButtons[i].setText("");
+		}
+	}
 	private void onGameOver() {
+		gameState = GAME_STATE_OVER;
+		for (int i = 0; i < columnCount; i++) {
+			bottomButtons[i].setClickable(false);
+		}
+
+
 		runOnUiThread(new Runnable() {
 
 			@Override
 			public void run() {
-				//resultLayer.getParent().requestTransparentRegion(surfaceView);
-				//resultLayer.setBackgroundColor(Color.parseColor("#FF773460"));
-				//resultLayer.bringToFront();
+				if (currentScore > bestScore) {
+					bestScore = currentScore;
+					App.updateBestScore(GAME_TYPE, currentScore);
+				}
+				currentScoreTextView.setText(getString(R.string.current_score, currentScore));
+				bestScoreTextView.setText(getString(R.string.best_score, bestScore));
 				resultLayer.setVisibility(View.VISIBLE);
-				Log.d("jyj", "jyj onGameOver");
-
+				bottomButtonsLayout.setVisibility(View.INVISIBLE);
 			}
 		});
 	}
@@ -404,14 +465,18 @@ public class MainActivity extends Activity implements Callback {
 
 			out: while (!Thread.interrupted()) {
 				startTime = System.currentTimeMillis();
+				
 				Canvas canvas = surfaceHolder.lockCanvas();
-
 				if (canvas == null) {
 					continue;
 				}
 
 				try {
 					cleanCanvas(canvas);
+
+					if (gameState != GAME_STATE_ONGOING) {
+						continue;
+					}
 
 					if (moveStepCount > MOVE_STEP_PER_BLOCK) {
 						moveStepCount = 0;
@@ -423,6 +488,7 @@ public class MainActivity extends Activity implements Callback {
 							if (firstHitBlockIndexes[i] == rowCount - 1) {
 								// TODO handle game over
 								cleanCanvas(canvas);
+								//resultLayer.draw(canvas);
 								onGameOver();
 								break out;
 							}
@@ -473,6 +539,7 @@ public class MainActivity extends Activity implements Callback {
 									if (firstHitBlockIndex == rowCount - 1) {
 										// TODO handle game over
 										cleanCanvas(canvas);
+										//resultLayer.draw(canvas);
 										onGameOver();
 										break out;
 									}

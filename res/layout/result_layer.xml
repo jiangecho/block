@@ -3,6 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center"
+    android:background="#FFFFFFFF"
     android:orientation="vertical" >
     
     <TextView 
@@ -10,6 +11,7 @@
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
         android:text="@string/type_info"
+        android:visibility="invisible"
         android:textSize="40sp"
         />
     
@@ -18,7 +20,7 @@
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
         android:layout_marginTop="10dip"
-        android:text="@string/type_normal"
+        android:text="@string/current_score"
         android:textSize="50sp"/>
     
     <TextView 
@@ -34,6 +36,7 @@
         android:layout_width="wrap_content"
         android:text="@string/restart"
         android:layout_marginTop="20dip"
+        android:clickable="true"
         android:onClick="onRestartButtonClick"
         android:textSize="50sp"/>
     
@@ -42,6 +45,7 @@
         android:layout_width="wrap_content"
         android:layout_marginTop="20dip"
         android:text="@string/back"
+        android:visibility="invisible"
         android:textSize="40sp"/>
 
 </LinearLayout>

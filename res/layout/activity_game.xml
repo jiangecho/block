@@ -17,6 +17,7 @@
         android:orientation="horizontal" >
 
         <Button
+            android:id="@+id/button_0"
             android:layout_width="0dip"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -24,6 +25,7 @@
             android:onClick="onType0ButtonClick" />
 
         <Button
+            android:id="@+id/button_1"
             android:layout_width="0dip"
             android:layout_height="match_parent"
             android:layout_marginLeft="1dip"
@@ -32,6 +34,7 @@
             android:onClick="onType1ButtonClick" />
 
         <Button
+            android:id="@+id/button_2"
             android:layout_width="0dip"
             android:layout_height="match_parent"
             android:layout_marginLeft="1dip"
@@ -40,6 +43,7 @@
             android:onClick="onType2ButtonClick" />
 
         <Button
+            android:id="@+id/button_3"
             android:layout_width="0dip"
             android:layout_height="match_parent"
             android:layout_marginLeft="1dip"
@@ -59,11 +63,6 @@
         android:visibility="visible" />
 
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="#FFFFFF"
-        android:text="testButton" />
 
     <include
         android:id="@+id/resultLayer"

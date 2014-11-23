@@ -3,9 +3,10 @@
     <string name="app_name">极简方块</string>
     <string name="start">开始</string>
     <string name="restart">再挑战一次</string>
-    <string name="best_score">最高分</string>
+    <string name="best_score">最高分 %d</string>
     <string name="back">返回菜单</string>
     <string name="type_normal">正常</string>
-    <string name="type_info">abckjl</string>
+    <string name="type_info">%1$s-%2$s</string>
     <string name="mode_random">随机模式</string>
+    <string name="current_score">%d</string>
 </resources>
