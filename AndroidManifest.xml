@@ -8,11 +8,18 @@
         android:minSdkVersion="9"
         android:targetSdkVersion="19" />
 
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="com.android.launcher.permission.INSTALL_SHORTCUT" />
+
     <application
+        android:name="com.echo.block.App"
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:name="com.echo.block.App"
         android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen" >
         <activity
             android:name="com.echo.block.MainActivity"
@@ -23,6 +30,29 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <!-- For AdsSdk. -->
+        <activity
+            android:name="com.wandoujia.ads.sdk.AppWallActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:launchMode="singleTop" />
+        <activity
+            android:name="com.wandoujia.ads.sdk.AppWidgetContainerActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+        <activity
+            android:name="com.wandoujia.ads.sdk.InterstitialAdActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+
+        <service android:name="com.wandoujia.ads.sdk.DownloadService" />
+
+        <receiver android:name="com.wandoujia.ads.sdk.AppChangedReceiver" >
+            <intent-filter>
+                <action android:name="android.intent.action.PACKAGE_ADDED" />
+
+                <data android:scheme="package" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

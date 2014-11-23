@@ -18,10 +18,12 @@ import android.graphics.PixelFormat;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.SurfaceHolder;
 import android.view.View;
 import android.view.SurfaceHolder.Callback;
 import android.view.SurfaceView;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -89,6 +91,8 @@ public class MainActivity extends Activity implements Callback {
 	
 	private static final int GAME_TYPE = 0;
 
+    private ViewGroup adsWidgetContainer;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -116,6 +120,7 @@ public class MainActivity extends Activity implements Callback {
 		
 		currentScoreTextView = (TextView) findViewById(R.id.score_textview);
 		bestScoreTextView = (TextView) findViewById(R.id.best_score_textview);
+		adsWidgetContainer = (ViewGroup) findViewById(R.id.ads_widget_container);
 		
 		sprites = new ArrayList<Sprite>();
 		globalPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -440,12 +445,17 @@ public class MainActivity extends Activity implements Callback {
 					bestScore = currentScore;
 					App.updateBestScore(GAME_TYPE, currentScore);
 				}
+				showAd();
 				currentScoreTextView.setText(getString(R.string.current_score, currentScore));
 				bestScoreTextView.setText(getString(R.string.best_score, bestScore));
 				resultLayer.setVisibility(View.VISIBLE);
 				bottomButtonsLayout.setVisibility(View.INVISIBLE);
 			}
 		});
+	}
+
+	private void showAd(){
+		App.showInterstitialAd(this, adsWidgetContainer, App.AD_TAG);
 	}
 	
 	private void onGetScore(){
@@ -599,6 +609,18 @@ public class MainActivity extends Activity implements Callback {
 
 		}
 
+	}
+
+	@Override
+	public boolean onKeyUp(int keyCode, KeyEvent event) {
+		if (keyCode == KeyEvent.KEYCODE_BACK) {
+			
+			if(adsWidgetContainer.getVisibility() == View.VISIBLE){
+				return true;
+			}
+		}
+		return super.onKeyUp(keyCode, event);
+		
 	}
 
 }

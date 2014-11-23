@@ -3,12 +3,25 @@ package com.echo.block;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.ByteArrayBuffer;
 
+import com.wandoujia.ads.sdk.Ads;
+import com.wandoujia.ads.sdk.loader.Fetcher.AdFormat;
+import com.wandoujia.ads.sdk.widget.AppWidget;
+
+import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
 
 public class App extends Application {
 
@@ -32,9 +45,9 @@ public class App extends Application {
 	private static final String LAST_ENDLESS_DATE = "LAST_ENDLESS_DATE";
 	
 	// TODO attention: this is the wandoujia ad info, please set change it
-	public static final String AD_TAG = "";
-	private static final String APPKEY_ID = "";
-	private static final String SECRET_KEY = "";
+	public static final String AD_TAG = "e1079e51ea62190b5c53bb524a6f15ac";
+	private static final String APPKEY_ID = "100017801";
+	private static final String SECRET_KEY = "26d1c935a6bfcb7ada6952d7e04cf2ab";
 
 	@Override
 	public void onCreate() {
@@ -112,8 +125,52 @@ public class App extends Application {
 
 	private void initAd() {
 		// TODO depend on different ad platform
+		// Init AdsSdk.
+		try {
+			Ads.init(this, APPKEY_ID, SECRET_KEY);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
+	public static void showInterstitialAd(Activity activity, final ViewGroup adsWidgetContainer, String adTag) {
+		if (!showInterstitialAd) {
+			return;
+		}
+		boolean tmp = Ads.isLoaded(AdFormat.interstitial, adTag);
+		if (tmp) {
+			adsWidgetContainer.setVisibility(View.VISIBLE);
+			AppWidget appWidget = Ads.showAppWidget(activity, null, adTag, Ads.ShowMode.WIDGET,
+					new View.OnClickListener() {
+						@Override
+						public void onClick(View v) {
+							adsWidgetContainer.setVisibility(View.GONE);
+						}
+			});
+			if (App.autoDownloadAd) {
+				SharedPreferences sharedPreferences = activity.getSharedPreferences(activity.getPackageName(), Context.MODE_PRIVATE);
+				long lastEndlessModeMillis = sharedPreferences.getLong(LAST_ENDLESS_DATE, 0);
+
+				//long lastEndlessModeMillis = 0;
+				long currentMillis = System.currentTimeMillis();
+				long len = currentMillis - lastEndlessModeMillis;
+				if (len > 24 * 60 * 60 * 1000) {
+					int app_widget_install_button = com.wandoujia.ads.sdk.R.id.app_widget_install_button;
+					View view = appWidget.findViewById(app_widget_install_button);
+					if (view != null && view instanceof Button) {
+						((Button)view).performClick();
+						sharedPreferences.edit().putLong(LAST_ENDLESS_DATE, currentMillis).commit();
+					}
+				}
+				
+			}
+			adsWidgetContainer.addView(appWidget);
+		}else {
+			Ads.preLoad(activity, AdFormat.interstitial, adTag);
+		}
+		
+	}
 
 	/*
 	public static void submitScore(final String nickyName,
