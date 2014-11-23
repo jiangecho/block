@@ -50,7 +50,7 @@ public class MainActivity extends Activity implements Callback {
 	private int columnCount = DEFAULT_COLUMN_COUNT;
 	private int rowCount;
 
-	private int MOVE_STEP_PER_BLOCK = 80;
+	private int MOVE_STEP_PER_BLOCK = 20;
 	private int moveStepCount = 0;
 	private float moveHeightPerStep;
 
@@ -124,8 +124,10 @@ public class MainActivity extends Activity implements Callback {
 		firstHitBlockIndexes = new int[columnCount];
 		
 		scoreSprite = new ScoreSprite();
-		scoreSprite.setTextSize(50);
-		scoreSprite.setX(50);
+		scoreSprite.setTextSize(100);
+		
+		int screenW = ViewUtil.getScreenWidth(this);
+		scoreSprite.setX(screenW / 2);
 		scoreSprite.setY(100);
 		sprites.add(scoreSprite);
 		
@@ -348,7 +350,7 @@ public class MainActivity extends Activity implements Callback {
 	}
 
 	private void drawBlock(Canvas canvas, Paint paint, int rowIndex, int columnIndex) {
-		paint.setColor(Color.RED);
+		paint.setColor(Color.parseColor("#FF2A3C50"));
 
 		float x = columnIndex * blockWidth;
 		float y = (rowIndex - 1) * blockHeight + moveHeightPerStep * moveStepCount;

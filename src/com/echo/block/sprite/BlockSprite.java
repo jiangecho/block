@@ -30,7 +30,7 @@ public class BlockSprite extends Sprite{
 	
 	@Override
 	public void doDraw(Canvas canvas, Paint globalPaint, int status) {
-		globalPaint.setColor(Color.BLACK);
+		globalPaint.setColor(Color.parseColor("#FF2A3C50"));
 
 		if (direction == DIRECTION_UP) {
 			y -= speed;

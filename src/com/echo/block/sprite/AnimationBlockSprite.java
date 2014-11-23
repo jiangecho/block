@@ -41,7 +41,7 @@ public class AnimationBlockSprite extends Sprite{
 				w -= speed;
 				break;
 		}
-		globalPaint.setColor(Color.BLACK);
+		globalPaint.setColor(Color.parseColor("#FF2A3C50"));
 		canvas.drawRect(x, y, x + w, y + h, globalPaint);
 
 	}

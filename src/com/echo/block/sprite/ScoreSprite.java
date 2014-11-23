@@ -8,7 +8,7 @@ import android.text.style.TextAppearanceSpan;
 public class ScoreSprite extends Sprite{
 
 	private int score = 0;
-	private float textSize = 10;
+	private float textSize = 100;
 
 	@Override
 	public void doDraw(Canvas canvas, Paint globalPaint, int status) {
